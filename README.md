@@ -1,5 +1,8 @@
 # clip-suggestions-by-llm
 
+Copyright (c) 2026 Sakurane Haruka
+Released under the MIT License.
+
 OBSで保存した配信録画から、LLMに切り抜き候補を提示してもらうための下準備を行うPowerShellツールです。
 
 配信録画から配信者の音声トラックだけを取り出し、WhisperでSRT字幕ファイルを生成します。  
