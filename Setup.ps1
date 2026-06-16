@@ -72,21 +72,9 @@ function Initialize-ClipSuggestionsByLLM{
     [int]$VoiceTrack = 1 # OBSの録画設定を変更したのち、2に変更することを推奨
   )
 
-  $localErrorMsgs = @{
-    directoryAlreadyExists = @"
-既にセットアップ済みのディレクトリが存在します: $BaseDir
-再セットアップする場合は、先に Clean.ps1 を実行し、必要に応じて既存フォルダを手動で削除してください。
-"@
-  }
-
   # 文字起こしを解析する際に投げるプロンプトのファイル名
   $PromptFileName = "ClipSuggestionsByLLM.md"
   $promptPath = Join-Path $BaseDir $PromptFileName
-
-  # ディレクトリがすでにあったら使えない
-  if(Test-Path -LiteralPath $BaseDir){
-    throw $localErrorMsgs.directoryAlreadyExists
-  }
 
   # このツールセットが使うディレクトリの展開とWhisperのインストール
   Initialize-Directories -BaseDir $BaseDir -WorkDir $WorkDir -SourceVideoDir $SourceVideoDir -ManagedVideoDir $ManagedVideoDir -VoiceTrackDir $VoiceTrackDir -SrtDir $SrtDir -OutputDir $OutputDir
@@ -132,6 +120,10 @@ function Initialize-Directories{
     [Parameter(Mandatory = $true)][string]$SrtDir,
     [Parameter(Mandatory = $true)][string]$OutputDir
   )
+  if((Test-Path -LiteralPath $BaseDir) -and (-not (Test-Path -LiteralPath $BaseDir -PathType Container))){
+    throw "セットアップ先と同名のファイルが存在します: $BaseDir"
+  }
+
   if(-not(Test-Path $SourceVideoDir)){
     throw "$($SourceVideoDir)が見つかりませんでした"
   }
