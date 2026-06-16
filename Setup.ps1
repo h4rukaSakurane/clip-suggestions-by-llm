@@ -78,7 +78,6 @@ function Initialize-ClipSuggestionsByLLM{
 再セットアップする場合は、先に Clean.ps1 を実行し、必要に応じて既存フォルダを手動で削除してください。
 "@
   }
-  
 
   # 文字起こしを解析する際に投げるプロンプトのファイル名
   $PromptFileName = "ClipSuggestionsByLLM.md"
@@ -91,6 +90,7 @@ function Initialize-ClipSuggestionsByLLM{
 
   # このツールセットが使うディレクトリの展開とWhisperのインストール
   Initialize-Directories -BaseDir $BaseDir -WorkDir $WorkDir -SourceVideoDir $SourceVideoDir -ManagedVideoDir $ManagedVideoDir -VoiceTrackDir $VoiceTrackDir -SrtDir $SrtDir -OutputDir $OutputDir
+  Install-ApplicationFiles -BaseDir $BaseDir
   Install-WhisperEnvironment -WorkDir $WorkDir
   # プロンプトを作業フォルダのトップに配置  
   Set-Content -LiteralPath $promptPath -Value (New-Prompt -ManagedVideoDir $ManagedVideoDir -OutputDir $OutputDir) -Encoding UTF8
@@ -105,6 +105,21 @@ function Initialize-ClipSuggestionsByLLM{
   Add-Content -LiteralPath $PROFILE -Value $profileBlock -Encoding UTF8
 
   Write-Host "セットアップが完了しました。PowerShell 7を開き直してください"
+}
+
+function Install-ApplicationFiles {
+  param(
+    [Parameter(Mandatory = $true)][string]$BaseDir
+  )
+
+  $scriptDir = Join-Path $BaseDir "scripts"
+  New-Item -ItemType Directory -Force -Path $scriptDir | Out-Null
+  Copy-Item -Path (Join-Path $PSScriptRoot "scripts" "*.ps1") -Destination $scriptDir -Force
+
+  $cleanScript = Join-Path $PSScriptRoot "Clean.ps1"
+  if(Test-Path -LiteralPath $cleanScript){
+    Copy-Item -LiteralPath $cleanScript -Destination (Join-Path $BaseDir "Clean.ps1") -Force
+  }
 }
 
 function Initialize-Directories{
@@ -229,19 +244,19 @@ function New-GlobalSettings{
   )
   return @"
 # BEGIN ClipSuggestionsByLLM
-`$global:ClipSuggestionsByLLMRoot = "$PSScriptRoot"
+`$global:ClipSuggestionsByLLMRoot = "$($BaseDir)"
 Get-ChildItem -LiteralPath (Join-Path `$global:ClipSuggestionsByLLMRoot "scripts") -Filter "*.ps1" |
   Sort-Object Name |
   ForEach-Object { . `$_.FullName }
 
 `$global:ClipSuggestionsByLLMProfile = [pscustomobject]@{
-  BaseDir = "$BaseDir"
-  WorkDir = "$WorkDir"
-  SourceVideoDir = "$SourceVideoDir"
-  ManagedVideoDir = "$ManagedVideoDir"
-  VoiceTrackDir = "$VoiceTrackDir"
-  SrtDir = "$SrtDir"
-  OutputDir = "$OutputDir"
+  BaseDir = "$($BaseDir)"
+  WorkDir = "$($WorkDir)"
+  SourceVideoDir = "$($SourceVideoDir)"
+  ManagedVideoDir = "$($ManagedVideoDir)"
+  VoiceTrackDir = "$($VoiceTrackDir)"
+  SrtDir = "$($SrtDir)"
+  OutputDir = "$($OutputDir)"
   VoiceTrack = $VoiceTrack
 }
   
