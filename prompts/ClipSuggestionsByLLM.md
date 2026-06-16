@@ -14,7 +14,8 @@
   6. 出力ファイル名は`clip_${連番}_${英数字・ハイフン・アンダースコアだけで作った短い英語名}.mp4`の形式にしてください
     - 内容部分は英数字・ハイフン・アンダースコアのみ
     - 日本語、空白、記号、絵文字は使わない
-  7. 最後に、PowerShellにコピペして、Enterで実行できるコマンドブロックを出してください
+  7. `Split-Clip`は既定でCUDA/NVIDIA GPUを使います。GPUがない環境向けのコマンドを出す場合だけ、各`Split-Clip`呼び出しに`-CPU`を付けてください
+  8. 最後に、PowerShellにコピペして、Enterで実行できるコマンドブロックを出してください
 
 動作環境 : 
   PowerShell 7
@@ -28,6 +29,7 @@ Split-Clip関数の入力 :
   3. Start 切り出しの始点となる時刻
   4. Duration Startからの経過時間
   5. ClipName 出力ファイル名
+  6. CPU CPUエンコードに切り替えるオプション。通常は指定しない
 
 期待するPowerShellコマンドブロック
 ```ps1
@@ -35,6 +37,7 @@ $InputFile = "..."
 $OutDir = "..."
 function Start-Clips{
   # Split-Clip `$InputFile `$OutDir "開始時刻" "Duration" "出力ファイル名.mp4" が5~10回
+  # GPUがない場合だけ、各行の末尾に -CPU を付ける
 }
-Start-Clip
+Start-Clips
 ```

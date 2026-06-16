@@ -204,6 +204,20 @@ New-SuggestSource -VoiceTrack 2
 
 OBSでマルチトラック録画をしている場合は、配信者の声だけが入っているトラック番号の指定をおすすめします。
 
+## 切り出し時のエンコードについて
+
+`Split-Clip` は既定で NVIDIA GPU / CUDA 向けの `h264_nvenc` を使用します。
+
+```powershell
+Split-Clip $InputFile $OutDir "00:10:00" "00:00:30" "clip_01_sample.mp4"
+```
+
+NVIDIA GPU がない環境や、CPUでエンコードしたい場合は `-CPU` を指定してください。
+
+```powershell
+Split-Clip $InputFile $OutDir "00:10:00" "00:00:30" "clip_01_sample.mp4" -CPU
+```
+
 ## 注意事項
 
 - 初回セットアップでは、WhisperやPyTorchのインストールに時間がかかります

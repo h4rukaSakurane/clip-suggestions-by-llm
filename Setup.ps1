@@ -93,7 +93,7 @@ function Initialize-ClipSuggestionsByLLM{
   Initialize-Directories -BaseDir $BaseDir -WorkDir $WorkDir -SourceVideoDir $SourceVideoDir -ManagedVideoDir $ManagedVideoDir -VoiceTrackDir $VoiceTrackDir -SrtDir $SrtDir -OutputDir $OutputDir
   Install-WhisperEnvironment -WorkDir $WorkDir
   # プロンプトを作業フォルダのトップに配置  
-  Set-Content -LiteralPath $promptPath -Value (New-Prompt -SourceVideoDir $SourceVideoDir -OutputDir $OutputDir) -Encoding UTF8
+  Set-Content -LiteralPath $promptPath -Value (New-Prompt -ManagedVideoDir $ManagedVideoDir -OutputDir $OutputDir) -Encoding UTF8
 
   if(-not(Test-Path -LiteralPath $PROFILE)){
     # pwsh Profileがなかったら作る
@@ -201,7 +201,7 @@ function Install-WhisperEnvironment{
 # ClipSuggestionsByLLM.mdを作る
 function New-Prompt{
   param(
-    [Parameter(Mandatory = $true)][string]$SourceVideoDir,
+    [Parameter(Mandatory = $true)][string]$ManagedVideoDir,
     [Parameter(Mandatory = $true)][string]$OutputDir
   )
   $templatePath = Join-Path $PSScriptRoot "prompts\ClipSuggestionsByLLM.md"
@@ -209,7 +209,7 @@ function New-Prompt{
     throw "プロンプトテンプレートが見つかりません: $templatePath"
   }
   $prompt = Get-Content -LiteralPath $templatePath -Raw
-  $prompt = $prompt.Replace("{{SourceVideoDir}}", $SourceVideoDir)
+  $prompt = $prompt.Replace("{{ManagedVideoDir}}", $ManagedVideoDir)
   $prompt = $prompt.Replace("{{OutputDir}}", $OutputDir)
 
   return $prompt
@@ -289,4 +289,3 @@ else {
 
   Initialize-ClipSuggestionsByLLM -BaseDir $BaseDir -WorkDir $WorkDir -SourceVideoDir $SourceVideoDir -ManagedVideoDir $ManagedVideoDir -VoiceTrackDir $VoiceTrackDir -SrtDir $SrtDir -OutputDir $OutputDir -VoiceTrack $VoiceTrack
 }
-
