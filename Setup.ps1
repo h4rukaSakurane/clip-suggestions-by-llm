@@ -79,7 +79,13 @@ function Initialize-ClipSuggestionsByLLM{
   # このツールセットが使うディレクトリの展開とWhisperのインストール
   Initialize-Directories -BaseDir $BaseDir -WorkDir $WorkDir -SourceVideoDir $SourceVideoDir -ManagedVideoDir $ManagedVideoDir -VoiceTrackDir $VoiceTrackDir -SrtDir $SrtDir -OutputDir $OutputDir
   Install-ApplicationFiles -BaseDir $BaseDir
-  Install-WhisperEnvironment -WorkDir $WorkDir
+
+  # BaseDirにWhisper環境があったらスキップする
+  $venvDir = Join-Path $WorkDir ".venv"
+  if(-not(Test-Path -LiteralPath $venvDir)){
+    Install-WhisperEnvironment -WorkDir $WorkDir
+  }
+
   # プロンプトを作業フォルダのトップに配置  
   Set-Content -LiteralPath $promptPath -Value (New-Prompt -ManagedVideoDir $ManagedVideoDir -OutputDir $OutputDir) -Encoding UTF8
 
