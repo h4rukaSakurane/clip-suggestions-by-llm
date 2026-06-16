@@ -35,9 +35,12 @@ function Split-Clip {
     $outputFile
   )
 
+  Write-Host "切り出し開始: $ClipName ($Start + $Duration)"
   & ffmpeg @ffmpegArgs
 
   if($LASTEXITCODE -ne 0) {
     throw "ffmpegの実行に失敗しました (NVIDIAのGPUを使用できない場合は -CPUをつけて再実行してください)"
   }
+
+  Write-Host "切り出し完了: $outputFile"
 }
